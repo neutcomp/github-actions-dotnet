@@ -34,25 +34,17 @@ jobs:
           path: artifacts/
 
   deploy_dev:
-    name: Deploy_dev
-    runs-on: ubuntu-latest
+    name: Deploy Development
     needs: build
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+      env: dev
+    secrets: inherit
 
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dometrain-artifact
-          path: artifacts/
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }} // Managed Identity store in Github secrets
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: 'Deploy to Azure App Service'
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: app-thevictory-dev
-          package: artifacts/
+  deploy_prod:
+    name: Deploy Production
+    needs: deploy_dev
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+      env: prod
+    secrets: inherit
