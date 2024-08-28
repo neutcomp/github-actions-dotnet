@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     name: CI
@@ -30,22 +34,17 @@ jobs:
           path: artifacts/
 
   deploy_dev:
-    name: Deploy development
+    name: Deploy Development
     needs: build
     uses: ./.github/workflows/step-deploy.yml
     with:
       env: dev
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    secrets: inherit
 
   deploy_prod:
     name: Deploy Production
-    needs: build
+    needs: deploy_dev
     uses: ./.github/workflows/step-deploy.yml
     with:
       env: prod
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+    secrets: inherit
