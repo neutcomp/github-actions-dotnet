@@ -30,18 +30,22 @@ jobs:
           path: artifacts/
 
   deploy_dev:
-    name: Deploy_dev
-    runs-on: ubuntu-latest
+    name: Deploy development
     needs: build
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+      env: dev
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dometrain-artifact
-          path: artifacts/
+  deploy_prod:
+    name: Deploy Production
+    needs: build
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+      env: prod
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Deploy to Azure App Service'
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: app-thevictory-dev
-          package: artifacts/
