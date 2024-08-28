@@ -32,7 +32,7 @@ jobs:
   deploy_dev:
     name: Deploy development
     needs: build
-    uses: ./github/workflows/step-deploy.yml
+    uses: ./.github/workflows/step-deploy.yml
     with:
       env: dev
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -42,7 +42,7 @@ jobs:
   deploy_prod:
     name: Deploy Production
     needs: build
-    uses: ./github/workflows/step-deploy.yml
+    uses: ./.github/workflows/step-deploy.yml
     with:
       env: prod
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
