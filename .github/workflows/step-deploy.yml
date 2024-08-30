@@ -27,10 +27,20 @@ jobs:
       environment: ${{ inputs.env }}
 
       steps:
+        - uses: actions/checkout@v4
+
         - uses: actions/download-artifact@v4
           with:
             name: dometrain-artifact
             path: artifacts/
+        - name: Run Bicep
+          run: |
+            az deployment group create \
+              --name ${{ inputs.env }}-deployment-${{ github.run_number }} \
+              --template-file infrastructure/main.bicep \
+              --parameters infrastructure/environments/${{ inputs.env }}.bicepparam \
+              --resource-group ${{ inputs.resource_group_name }} \
+              --verbose
 
         - name: Deploy to Azure App Service
           uses: azure/webapps-deploy@v2
@@ -40,5 +50,5 @@ jobs:
             package: artifacts/
         
         - name: Swap slots
-          run: 
+          run: |
               az webapp deployment slot swap -g ${{ inputs.resource_group_name }} -n ${{ inputs.app_service_name }} --slot slot --target-slot production --verbose
